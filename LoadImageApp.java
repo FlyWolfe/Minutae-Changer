@@ -39,6 +39,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.*;
 import java.io.*;
+import java.util.ArrayList;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -51,6 +52,12 @@ import com.sun.javafx.font.directwrite.RECT;
 public class LoadImageApp extends Component {
            
     static BufferedImage img;
+    static Graphics2D g2d;
+    static JFrame f;
+    static ArrayList<Rectangle2D> points = new ArrayList<Rectangle2D>();
+    static boolean addPoint = false;
+    static boolean newPoint = false;
+    static int pointSelected;
  
     public void paint(Graphics g) {
         g.drawImage(img, 0, 0, null);
@@ -74,27 +81,91 @@ public class LoadImageApp extends Component {
  
     public static void main(String[] args) {
     	
-        JFrame f = new JFrame("Load Image Sample");
-             
+        f = new JFrame("Load Image Sample");
+        f.add(new LoadImageApp("finger.jpg"));
+        g2d = img.createGraphics();
+
+        f.pack();
+        f.setVisible(true);
+
+        g2d.setColor(Color.green);
+//        g2d.fill(new Rectangle2D.Double(100, 100, 20, 20));
+//
+//        f.add(new LoadImageApp("finger.jpg"));
+        
+        
+        
+        
+        // Listeners
         f.addWindowListener(new WindowAdapter(){
                 public void windowClosing(WindowEvent e) {
                     System.exit(0);
                 }
             });
-        f.add(new LoadImageApp("finger.jpg"));
-        
-        f.pack();
-        f.setVisible(true);
-      
-        Graphics2D g2d = img.createGraphics();
+        f.addMouseListener(new MouseListener() {
+        	public void mouseClicked(MouseEvent e) {
+            }
 
-        g2d.setColor(Color.red);
-        g2d.fill(new Rectangle2D.Double(100, 100, 20, 20));
-        g2d.clearRect(100, 100, 20, 20 );
-        f.repaint();
-        f.add(new LoadImageApp("finger.jpg"));
-        
-        g2d.dispose();
-        
+			public void mousePressed(MouseEvent e) {
+				double x=(double)e.getX();
+                double y=(double)e.getY();
+                if (addPoint == false && newPoint == false) {
+					for (int i = 0; i < points.size(); i++) {
+	                	if (points.get(i).contains(x, y)) {
+	                		addPoint = true;
+	                		pointSelected = i;
+	                		break;
+	                	}
+	                }
+                }
+                if (addPoint == true || newPoint == true) {
+                	//f.add(new LoadImageApp("finger.jpg"));
+	                points.set(pointSelected, new Rectangle2D.Double(x - 10, y - 10, 20, 20));
+	                for (int i = 0; i < points.size(); i++) {
+                		g2d.fill(points.get(i));
+                	}
+	                f.repaint();
+                }
+                else if (addPoint == false) {
+                	points.add(new Rectangle2D.Double(x - 10, y - 10, 20, 20));
+                	newPoint = true;
+                	for (int i = 0; i < points.size(); i++) {
+	                	if (points.get(i).contains(x, y)) {
+	                		addPoint = true;
+	                		pointSelected = i;
+	                		break;
+	                	}
+	                }
+                }
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				int x=e.getX();
+                int y=e.getY();
+                if (addPoint == true || newPoint == true) {
+                	//f.add(new LoadImageApp("finger.jpg"));
+	                points.set(pointSelected, new Rectangle2D.Double(x - 10, y - 10, 20, 20));
+	                for (int i = 0; i < points.size(); i++) {
+                		g2d.fill(points.get(i));
+                	}
+	                
+	                f.repaint();
+	                
+	                addPoint = false;
+	                newPoint = false;
+                }
+			}
+
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+        });
     }
+
 }
