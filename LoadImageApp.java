@@ -1,3 +1,4 @@
+package image_editor;
 
 
 /*
@@ -34,10 +35,15 @@
  
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.*;
 import java.io.*;
+
 import javax.imageio.*;
 import javax.swing.*;
+
+import com.sun.javafx.font.directwrite.RECT;
  
 /**
  * This class demonstrates how to load an Image from an external file
@@ -52,7 +58,7 @@ public class LoadImageApp extends Component {
  
     public LoadImageApp(String file) {
        try {
-           img = ImageIO.read(new File("/home/alex/Downloads/"+file));
+           img = ImageIO.read(new File("/home/mathew/workspace/Minutae Changer/src/images/"+file));
        } catch (IOException e) {
        }
  
@@ -79,8 +85,16 @@ public class LoadImageApp extends Component {
         
         f.pack();
         f.setVisible(true);
-        Graphics g = img.createGraphics();
       
+        Graphics2D g2d = img.createGraphics();
+
+        g2d.setColor(Color.red);
+        g2d.fill(new Rectangle2D.Double(100, 100, 20, 20));
+        g2d.clearRect(100, 100, 20, 20 );
+        f.repaint();
+        f.add(new LoadImageApp("finger.jpg"));
+        
+        g2d.dispose();
+        
     }
 }
-
