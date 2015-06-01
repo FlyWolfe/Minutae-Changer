@@ -54,11 +54,15 @@ public class LoadImageApp extends Component {
     static BufferedImage img;
     static Graphics2D g2d;
     static JFrame f;
+    static JFrame btnFrame;
     static ArrayList<Rectangle2D> points = new ArrayList<Rectangle2D>();
-    static boolean addPoint = false;
-    static boolean newPoint = false;
+    static boolean deletePoint = false;
     static int pointSelected;
  
+
+
+
+    
     public void paint(Graphics g) {
         g.drawImage(img, 0, 0, null);
     }
@@ -80,23 +84,42 @@ public class LoadImageApp extends Component {
     }
  
     public static void main(String[] args) {
+
+        JPanel pnlButton = new JPanel();
+        // Buttons
+        JCheckBox btn = new JCheckBox("Delete");
     	
         f = new JFrame("Load Image Sample");
+        btnFrame = new JFrame("Button Frame");
         f.add(new LoadImageApp("finger.jpg"));
         g2d = img.createGraphics();
 
         f.pack();
+        btnFrame.pack();
         f.setVisible(true);
+        btnFrame.setVisible(true);
+        btnFrame.setSize(200, 200);
 
         g2d.setColor(Color.green);
-//        g2d.fill(new Rectangle2D.Double(100, 100, 20, 20));
-//
-//        f.add(new LoadImageApp("finger.jpg"));
         
-        
+        // Set checkbox bounds
+        btn.setBounds(60, 400, 220, 30);
+
+        // JPanel bounds
+        pnlButton.setBounds(img.getWidth() / 2, img.getHeight(), 200, 100);
+
+        // Adding to JFrame
+        pnlButton.add(btn);
+        btnFrame.add(pnlButton);
         
         
         // Listeners
+        btn.addItemListener(new ItemListener() {
+
+            public void itemStateChanged(ItemEvent e) {
+            	deletePoint = !deletePoint;
+            }
+         });
         f.addWindowListener(new WindowAdapter(){
                 public void windowClosing(WindowEvent e) {
                     System.exit(0);
@@ -109,53 +132,47 @@ public class LoadImageApp extends Component {
 			public void mousePressed(MouseEvent e) {
 				double x=(double)e.getX();
                 double y=(double)e.getY();
-                if (addPoint == false && newPoint == false) {
-					for (int i = 0; i < points.size(); i++) {
-	                	if (points.get(i).contains(x, y)) {
-	                		addPoint = true;
-	                		pointSelected = i;
-	                		break;
-	                	}
-	                }
-                }
-                if (addPoint == true || newPoint == true) {
-                	//f.add(new LoadImageApp("finger.jpg"));
-	                points.set(pointSelected, new Rectangle2D.Double(x - 10, y - 10, 20, 20));
-	                for (int i = 0; i < points.size(); i++) {
-                		g2d.fill(points.get(i));
-                	}
-	                f.repaint();
-                }
-                else if (addPoint == false) {
+                if (!deletePoint) {
                 	points.add(new Rectangle2D.Double(x - 10, y - 10, 20, 20));
-                	newPoint = true;
+                	pointSelected = points.size() - 1;
                 	for (int i = 0; i < points.size(); i++) {
-	                	if (points.get(i).contains(x, y)) {
-	                		addPoint = true;
-	                		pointSelected = i;
-	                		break;
-	                	}
+                		g2d.fill(points.get(i));
 	                }
                 }
+                else {
+                	for (int i = 0; i < points.size(); i++) {
+                		if (points.get(i).contains(x, y)) {
+                			points.remove(i);
+                		}
+                	}
+                }
+                refreshFrame();
+
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				int x=e.getX();
                 int y=e.getY();
-                if (addPoint == true || newPoint == true) {
-                	//f.add(new LoadImageApp("finger.jpg"));
-	                points.set(pointSelected, new Rectangle2D.Double(x - 10, y - 10, 20, 20));
-	                for (int i = 0; i < points.size(); i++) {
-                		g2d.fill(points.get(i));
+                if (!deletePoint) {
+                	for (int i = 0; i < points.size(); i++) {
+                		if (pointSelected == i) {
+                			points.set(pointSelected, new Rectangle2D.Double(x - 10, y - 10, 20, 20));
+                		}
                 	}
-	                
-	                f.repaint();
-	                
-	                addPoint = false;
-	                newPoint = false;
+                	refreshFrame();
                 }
 			}
 
+			public void refreshFrame() {
+				f.add(new LoadImageApp("finger.jpg"));
+				f.repaint();
+            	g2d = img.createGraphics();
+            	g2d.setColor(Color.green);
+            	for (int i = 0; i < points.size(); i++) {
+            		g2d.fill(points.get(i));
+                }
+			}
+			
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				
