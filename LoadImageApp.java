@@ -39,6 +39,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.*;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import javax.imageio.*;
@@ -58,7 +59,9 @@ public class LoadImageApp extends Component {
     static ArrayList<Rectangle2D> points = new ArrayList<Rectangle2D>();
     static boolean deletePoint = false;
     static int pointSelected;
- 
+    static String filename;
+    static ArrayList<Rectangle2D> initialPoints = new ArrayList<Rectangle2D>();
+    static ArrayList<Integer> pointNumbers = new ArrayList<Integer>();
 
 
 
@@ -83,15 +86,33 @@ public class LoadImageApp extends Component {
        }
     }
  
+    public static void initialRefresh() {
+		f.add(new LoadImageApp("finger.jpg"));
+		f.repaint();
+    	g2d = img.createGraphics();
+    	g2d.setColor(Color.blue);
+    	for (int i = 0; i < initialPoints.size(); i++) {
+    		g2d.setStroke(new BasicStroke(3.0f,
+                    BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER,
+                    10.0f));
+    		g2d.drawRect((int)initialPoints.get(i).getX(), (int)initialPoints.get(i).getY(), (int)initialPoints.get(i).getWidth(), (int)initialPoints.get(i).getHeight());
+    		g2d.drawString(String.valueOf(pointNumbers.get(i)),(int)initialPoints.get(i).getX() - 20, (int)initialPoints.get(i).getY() - 20);
+    	}
+	}
+    
     public static void main(String[] args) {
 
-        JPanel pnlButton = new JPanel();
-        // Buttons
-        JCheckBox btn = new JCheckBox("Delete");
+    	JPanel pnlButton = new JPanel();
+        
+    	// Buttons
+    	JCheckBox btn = new JCheckBox("Delete");
+    	JButton done = new JButton("Submit");
     	
         f = new JFrame("Load Image Sample");
         btnFrame = new JFrame("Button Frame");
-        f.add(new LoadImageApp("finger.jpg"));
+        filename = "finger";
+        f.add(new LoadImageApp(filename + ".jpg"));
         g2d = img.createGraphics();
 
         f.pack();
@@ -100,18 +121,15 @@ public class LoadImageApp extends Component {
         btnFrame.setVisible(true);
         btnFrame.setSize(200, 200);
 
-        g2d.setColor(Color.green);
-        
-        // Set checkbox bounds
-        btn.setBounds(60, 400, 220, 30);
-
-        // JPanel bounds
-        pnlButton.setBounds(img.getWidth() / 2, img.getHeight(), 200, 100);
+        g2d.setColor(Color.red);
 
         // Adding to JFrame
         pnlButton.add(btn);
+        pnlButton.add(done);
         btnFrame.add(pnlButton);
         
+        loader(filename + ".txt");
+        initialRefresh();
         
         // Listeners
         btn.addItemListener(new ItemListener() {
@@ -120,6 +138,26 @@ public class LoadImageApp extends Component {
             	deletePoint = !deletePoint;
             }
          });
+        done.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+            	PrintWriter writer;
+				try {
+					writer = new PrintWriter("/home/mathew/workspace/Minutae Changer/src/images/" + filename + ".txt" , "UTF-8");
+					for (int i = 0; i < points.size(); i++) {
+						writer.println((int)points.get(i).getX() + "," + (int)points.get(i).getY());
+	                }
+	            	writer.close();
+	            	System.exit(0);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+        });
         f.addWindowListener(new WindowAdapter(){
                 public void windowClosing(WindowEvent e) {
                     System.exit(0);
@@ -135,9 +173,6 @@ public class LoadImageApp extends Component {
                 if (!deletePoint) {
                 	points.add(new Rectangle2D.Double(x - 10, y - 10, 20, 20));
                 	pointSelected = points.size() - 1;
-                	for (int i = 0; i < points.size(); i++) {
-                		g2d.fill(points.get(i));
-	                }
                 }
                 else {
                 	for (int i = 0; i < points.size(); i++) {
@@ -167,10 +202,23 @@ public class LoadImageApp extends Component {
 				f.add(new LoadImageApp("finger.jpg"));
 				f.repaint();
             	g2d = img.createGraphics();
-            	g2d.setColor(Color.green);
+            	g2d.setColor(Color.red);
             	for (int i = 0; i < points.size(); i++) {
-            		g2d.fill(points.get(i));
-                }
+            		g2d.setStroke(new BasicStroke(3.0f,
+                            BasicStroke.CAP_BUTT,
+                            BasicStroke.JOIN_MITER,
+                            10.0f));
+            		g2d.drawRect((int)points.get(i).getX(), (int)points.get(i).getY(), (int)points.get(i).getWidth(), (int)points.get(i).getHeight());
+            	}
+            	g2d.setColor(Color.blue);
+            	for (int i = 0; i < initialPoints.size(); i++) {		
+            		g2d.setStroke(new BasicStroke(3.0f,
+                            BasicStroke.CAP_BUTT,
+                            BasicStroke.JOIN_MITER,
+                            10.0f));
+            		g2d.drawRect((int)initialPoints.get(i).getX(), (int)initialPoints.get(i).getY(), (int)initialPoints.get(i).getWidth(), (int)initialPoints.get(i).getHeight());
+            		g2d.drawString(String.valueOf(pointNumbers.get(i)),(int)initialPoints.get(i).getX() - 20, (int)initialPoints.get(i).getY() - 20);
+            	}
 			}
 			
 			public void mouseEntered(MouseEvent e) {
@@ -183,6 +231,52 @@ public class LoadImageApp extends Component {
 				
 			}
         });
+        
+    }
+    public static void loader(String file) {
+        // The name of the file to open.
+        String fileName = "/home/mathew/workspace/Minutae Changer/src/images/" + file;
+
+        double x;
+        double y;
+        int count = 1;
+        
+        // This will reference one line at a time
+        String line = null;
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader = 
+                new FileReader(fileName);
+
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader = 
+                new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+            	String[] parts = line.split(",");
+                x = (double)Integer.parseInt(parts[0]);
+                y = (double)Integer.parseInt(parts[1]);
+                initialPoints.add(new Rectangle2D.Double(x - 10, y - 10, 20, 20));
+                pointNumbers.add(count);
+                count++;
+            }    
+
+            // Always close files.
+            bufferedReader.close();            
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");                
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");                   
+            // Or we could just do this: 
+            // ex.printStackTrace();
+        }
     }
 
 }
