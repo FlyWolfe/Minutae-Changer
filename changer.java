@@ -55,7 +55,6 @@ public class changer extends JApplet{
 		setJMenuBar(menuBar);
 		loadimage("finger.jpg");
 		picture.setIcon(new ImageIcon(img));
-		//getContentPane().add(picture);
 		setContentPane(picture);
 		setSize(img.getWidth(),img.getHeight());
 		getContentPane().addMouseListener(new MouseListener(){
@@ -113,29 +112,16 @@ public class changer extends JApplet{
 			}
 			
 		});
-		//getContentPane().add(g2d);
 		loader("finger.txt");
 		paint();
 	}
-	
-	/*public void start()
-	{
-		repaint();
-	}*/
-	
+
 	public void paint(){
-		//picture2.setIcon(new ImageIcon(img));
 		picture.setIcon(new ImageIcon(img));
-		//super.paintComponents(g2d);
 		getContentPane().removeAll();
-		//getContentPane().add(picture);
 		g2d = img.createGraphics();
-		//g2d.clearRect(0,0, 10000, 10000);
 		picture.setIcon(new ImageIcon(img));
-		//picture.setOpaque(true);
 		loadimage("finger.jpg");
-		//g2d.drawImage(img, 0, 0, 1000, 1000, 1000, 1000, 1000, 1000, null);
-		//setContentPane(picture);
     	g2d.setColor(Color.red);
     	for (int i = 0; i < points.size(); i++) {
     		g2d.setStroke(new BasicStroke(3.0f,
@@ -154,8 +140,6 @@ public class changer extends JApplet{
     		g2d.drawRect((int)initialPoints.get(i).getX(), (int)initialPoints.get(i).getY(), (int)initialPoints.get(i).getWidth(), (int)initialPoints.get(i).getHeight());
     		g2d.drawString(String.valueOf(pointNumbers.get(i)),(int)initialPoints.get(i).getX() - 20, (int)initialPoints.get(i).getY() - 20);
     	}
-    	//getContentPane().repaint();
-    	//picture.repaint();
     	repaint();
 	}
 	
