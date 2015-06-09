@@ -1,4 +1,4 @@
-package createHit;
+package image_editor;
 
 
 import java.awt.BasicStroke;
@@ -24,6 +24,7 @@ public class changer extends JApplet{
 	JMenuItem submit;
 	JCheckBoxMenuItem deleteBox;
 	JLabel picture;
+	JLabel picture2;
     static BufferedImage img;
     static int pointSelected;
     static Graphics2D g2d;
@@ -37,14 +38,12 @@ public class changer extends JApplet{
 		submit = new JMenuItem("Submit");
 		deleteBox = new JCheckBoxMenuItem("Delete");
 		deleteBox.addItemListener(new ItemListener(){
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				deletePoint = !deletePoint;
 			}
 		});
 		submit.addActionListener(new ActionListener()
 		{
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println(deletePoint);
 				
@@ -56,7 +55,8 @@ public class changer extends JApplet{
 		setJMenuBar(menuBar);
 		loadimage("finger.jpg");
 		picture.setIcon(new ImageIcon(img));
-		getContentPane().add(picture);
+		//getContentPane().add(picture);
+		setContentPane(picture);
 		setSize(img.getWidth(),img.getHeight());
 		getContentPane().addMouseListener(new MouseListener(){
 	
@@ -124,9 +124,10 @@ public class changer extends JApplet{
 	}*/
 	
 	public void paint(){
-		super.paintComponents(g2d);
+		//picture2.setIcon(new ImageIcon(img));
 		picture.setIcon(new ImageIcon(img));
-		getContentPane().add(picture);
+		super.paintComponents(g2d);
+		//getContentPane().add(picture2);
 		g2d = img.createGraphics();
     	g2d.setColor(Color.red);
     	for (int i = 0; i < points.size(); i++) {
@@ -146,21 +147,21 @@ public class changer extends JApplet{
     		g2d.drawRect((int)initialPoints.get(i).getX(), (int)initialPoints.get(i).getY(), (int)initialPoints.get(i).getWidth(), (int)initialPoints.get(i).getHeight());
     		g2d.drawString(String.valueOf(pointNumbers.get(i)),(int)initialPoints.get(i).getX() - 20, (int)initialPoints.get(i).getY() - 20);
     	}
-    	getContentPane().repaint();
-    	picture.repaint();
+    	//getContentPane().repaint();
+    	//picture.repaint();
     	repaint();
 	}
 	
 	public void loadimage(String file){
 		try {
-	           img = ImageIO.read(new File("/home/alex/workspace/"+file));
+	           img = ImageIO.read(new File("/home/mathew/workspace/Minutae Changer/src/images/" + file));
 	       } catch (IOException e) {
 	    	   System.out.println("couldnt load file");
 	       }	
 		}
 	public static void loader(String file) {
         // The name of the file to open.
-        String fileName = "/home/alex/workspace/" + file;
+        String fileName = "/home/mathew/workspace/Minutae Changer/src/images/" + file;
 
         double x;
         double y;
