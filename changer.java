@@ -126,9 +126,16 @@ public class changer extends JApplet{
 	public void paint(){
 		//picture2.setIcon(new ImageIcon(img));
 		picture.setIcon(new ImageIcon(img));
-		super.paintComponents(g2d);
-		//getContentPane().add(picture2);
+		//super.paintComponents(g2d);
+		getContentPane().removeAll();
+		//getContentPane().add(picture);
 		g2d = img.createGraphics();
+		//g2d.clearRect(0,0, 10000, 10000);
+		picture.setIcon(new ImageIcon(img));
+		//picture.setOpaque(true);
+		loadimage("finger.jpg");
+		//g2d.drawImage(img, 0, 0, 1000, 1000, 1000, 1000, 1000, 1000, null);
+		//setContentPane(picture);
     	g2d.setColor(Color.red);
     	for (int i = 0; i < points.size(); i++) {
     		g2d.setStroke(new BasicStroke(3.0f,
