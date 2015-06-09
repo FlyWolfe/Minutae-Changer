@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -31,6 +33,7 @@ public class changer extends JApplet{
     static ArrayList<Rectangle2D> points = new ArrayList<Rectangle2D>();
     static ArrayList<Rectangle2D> initialPoints = new ArrayList<Rectangle2D>();
     static ArrayList<Integer> pointNumbers = new ArrayList<Integer>();
+    String textFile = "finger";
     
 	public void init(){
 		picture = new JLabel();
@@ -45,7 +48,21 @@ public class changer extends JApplet{
 		submit.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(deletePoint);
+				try {
+					PrintWriter writer;
+					writer = new PrintWriter("/home/mathew/workspace/Minutae Changer/src/images/" + textFile + ".txt" , "UTF-8");
+					for (int i = 0; i < points.size(); i++) {
+						writer.println((int)points.get(i).getX() + "," + (int)points.get(i).getY());
+	                }
+	            	writer.close();
+	            	System.exit(0);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 			}
 			
