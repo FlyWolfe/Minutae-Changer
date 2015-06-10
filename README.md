@@ -1,2 +1,2 @@
-# Minutae-Changer
-Minutae maneuvering in pictures with Java and/or Python
+# Minutiae-Changer
+Minutiae maneuvering in pictures with Java and/or Python
