@@ -1,59 +1,96 @@
 from Tkinter import *
-from PIL import Image, ImageTk
+from PIL import ImageTk, Image
 
 
-
-class ExampleApp(Tk):
-    def __init__(self):
-        Tk.__init__(self)
-        self.x = self.y = 0
-        self.canvas = Canvas(self, width=512, height=512, cursor="cross")
-        self.canvas.pack(side="top", fill="both", expand=True)
+class App:
+    
+    def __init__(self, master):
+        self.image = ImageTk.PhotoImage(Image.open("/home/alex/workspace/finger.jpg"))
+        self.file = "/home/alex/workspace/finger.txt"
+        self.setPoints = []
+        self.delete =IntVar()
+        frame = Frame(master)
+        frame.pack()
+        self.canvas = Canvas(frame,width=1000,height=1000)
+        self.canvas.grid(row = 1, column =0)
+        self.canvas.create_image(0,0,anchor="nw",image=self.image)
         self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<B1-Motion>", self.on_move_press)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
+        #self.canvas.create_rectangle(10, 10, 120, 90, fill="blue")
+        #self.canvas.pack(side = "top", fill = "both", expand=True)
+        
+        self.load()
+        #self.panel = Label(frame,image = self.image).grid(row=1, column = 0)
+        #self.panel.pack()
+        self.delButton = Checkbutton(frame, text="Delete", variable = self.delete, command = self.printvar).grid(row = 0, column=0)
+        #self.delButton.pack()
+        self.submit = Button(frame, text = "Submit", command = self.submit).grid(row = 0, column =1)
 
-        self.rect = None
-
-        self.start_x = None
-        self.start_y = None
-
-
-        self._draw_image()
-
-    def cb(self, event):
-            print "variable is", self.var.get()
-
-    def _draw_image(self):
-
-        self.im = Image.open('/home/mathew/workspace/Turk_Stuff/images/finger.jpg')
-        self.tk_im = ImageTk.PhotoImage(self.im)
-        self.canvas.create_image(0,0,anchor="nw",image=self.tk_im)
-
-
-
+    def printvar(self):
+        
+        print ("varible is", self.delete.get())
+    def submit(self):
+        self.f = open(self.file, 'w')
+        for i in range(len(self.setPoints)):
+            x = self.setPoints[i].x
+            y = self.setPoints[i].y
+            self.f.write(str(x) +","+str(y)+"\n")
+        print("saving file")
+        self.f.close()
+    def load(self):
+        self.f = open(self.file, 'r')
+        for line in self.f:
+            x = line.split(",")[0]
+            y = line.split(",")[1]
+            #self.initPoints.append(Cord(x,y))
+            print("getting rectangles")
+            print("printing rectangles")
+            self.canvas.create_rectangle(int(x),int(y),int(x)+20,int(y)+20,outline="blue",width = 3.0)
+        self.f.close()
+        
     def on_button_press(self, event):
-        # save mouse drag start position
-        self.start_x = event.x
-        self.start_y = event.y
+        if(self.delete.get() == 0):
+            # save mouse drag start position
+            self.start_x = event.x
+            self.start_y = event.y
+            point = Cord(event.x-10,event.y-10)
+            self.setPoints.append(point)
+            # create rectangle if not yet exist
+            #if not self.rect:
+            self.rect = self.canvas.create_rectangle(event.x-10, event.y-10, event.x+10, event.y+10, width = 3.0)
+            #self.canvas.coords(self.rect, self.start_x, self.start_y, 10, 10)
+        else:
+            for i in range(len(self.setPoints)):
+                x = self.setPoints[i].x
+                y = self.setPoints[i].y
+                if((x<event.x+10 & x > event.x-10) & (y < event.y+10 & y > event.y-10)):
+                    self.setPoints.remove(i)
+                    newRect =Rect(x-10,y-10,x+10,y+10)
+                    self.canvas.coords(newRect, 0, 0, 0, 0)
 
-        # create rectangle if not yet exist
-        #if not self.rect:
-        self.rect = self.canvas.create_rectangle(event.x-5, event.y-5, event.x+5, event.y+5, fill="black")
-        #self.canvas.coords(self.rect, self.start_x, self.start_y, 10, 10)
+                    
+                
 
     def on_move_press(self, event):
         curX, curY = (event.x, event.y)
-
+        self.setPoints[len(self.setPoints)-1] = Cord(event.x-10,event.y-10)
         # expand rectangle as you drag the mouse
-        self.canvas.coords(self.rect, curX-5, curY-5, curX+5, curY+5)
+        self.canvas.coords(self.rect, curX-10, curY-10, curX+10, curY+10)
 
 
 
     def on_button_release(self, event):
         pass
 
-
-if __name__ == "__main__":
-    app = ExampleApp()
-    app.mainloop()
+        
+class Cord:
+    
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+    
+root = Tk()
+root.title("Image Loader")
+app =App(root)
+root.mainloop()
