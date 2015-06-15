@@ -133,6 +133,24 @@ $imgSize = getimagesize("finger.jpg");
 
 
 <script language="javascript" type="text/javascript">
+
+var start = function () {
+			// storing original coordinates
+			this.ox = this.attr("x");
+			this.oy = this.attr("y");
+			this.attr({opacity: 0.5});      
+		},
+		move = function (dx, dy) {
+			// move will be called with dx and dy
+			this.attr({x: this.ox + dx, y: this.oy + dy}); 
+		},
+		up = function () {
+			// restoring state
+			this.attr({fill: "#f00"});      
+			this.attr({opacity: 1});      
+		};  
+
+	
 var deletePoint = false;
 var newPoints =[];
 //creates drawable canvas and loads and scales the image.
@@ -141,7 +159,6 @@ echo("var paper = Raphael(0, 0,". "700" . ", " . "700".");");
 echo ("var img = paper.image('finger.jpg', 0, 0,". "700" . ", " . "700".");");
 ?>
 var rectangles = paper.set();
-//img.scale(.5);
 
 function setListeners(rect) {
 	rectangles[rect].node.onclick = function () {
@@ -149,34 +166,24 @@ function setListeners(rect) {
 			rectangles[rect].remove();
 		}
 	}
-	rectangles[rect].node.drag(dragStart(),dragging(e),dragEnd(e));
 }
-
-function dragStart(){
-}
-function dragging(e){
-	rectangles[rect].attr("x", e.clientX, "y", e.clientY);
-}
-function dragEnd(e){
-	rectangles[rect].attr("x", e.clientX, "y", e.clientY);
-}
-
-
 
 img.node.onclick = function (e) {
 	if(!document.getElementById("delete").checked){
-		var x = e.clientX;
-		var y = e.clientY;
+		var x = e.clientX - 6;
+		var y = e.clientY - 6;
 		rectangles.push(paper.rect(x,y,10,10));
-		rectangles[rectangles.length-1].attr("fill", "#f00");
-		rectangles[rectangles.length-1].attr("stroke", "#fff");
+		rectangles[rectangles.length-1].attr("fill", "#f00", "stroke", "#fff");
+		rectangles[rectangles.length-1].ox = x;
+		rectangles[rectangles.length-1].oy = y;
+		rectangles[rectangles.length-1].drag(move, start, up);
 		setListeners(rectangles.length-1);
+
 		var arrayText="test";
 		for (var i = 0; i < newPoints.length(); i++) {
 			arrayText= arrayText + newPoints[i] + "\n";
 		}
-		printf("test");
-		document.getElementById("array").value= arrayText;
+		//document.getElementById("array").value= arrayText;
 	}
 }
 
